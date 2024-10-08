@@ -21,23 +21,24 @@ class Role(models.Model):
 class User(AbstractUser):
     user_id = models.AutoField(primary_key=True)
     email = models.EmailField(unique=True, db_index=True)
-    first_name = models.CharField(max_length=50)
     second_name = models.CharField(max_length=50)
+    
+    # Remove first_name as it already exists in AbstractUser
+    # If you want to keep first_name as is, you can just customize it:
+    # first_name = models.CharField(max_length=50)  # Not necessary, already exists in AbstractUser
 
     # ManyToMany fields that clash with auth.User are assigned a related_name
-    groups = models.ManyToManyField(Group, related_name='custom_user_set')
-    user_permissions = models.ManyToManyField(Permission, related_name='custom_user_permissions')
+    groups = models.ManyToManyField(Group, related_name='custom_user_set', blank=True)
+    user_permissions = models.ManyToManyField(Permission, related_name='custom_user_permissions', blank=True)
 
-    roles = models.ManyToManyField('Role', related_name='users')
-    teams = models.ManyToManyField('Team', related_name='members')
+    roles = models.ManyToManyField('Role', related_name='users', blank=True)
+    teams = models.ManyToManyField('Team', related_name='members', blank=True)
 
     def __str__(self):
         return f"{self.first_name} {self.second_name}"
 
     class Meta:
         ordering = ['first_name', 'second_name']
-
-
 
 
 class Team(models.Model):
